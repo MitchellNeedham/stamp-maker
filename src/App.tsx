@@ -34,12 +34,18 @@ function App() {
     if (!luminance) return;
     setIsTracing(true);
     const timer = setTimeout(() => {
-      setTrace(traceBands(luminance, { levels: params.levels, smoothing: params.smoothing }));
+      setTrace(
+        traceBands(luminance, {
+          levels: params.levels,
+          smoothing: params.smoothing,
+          invert: params.invert,
+        })
+      );
       setIsTracing(false);
     }, TRACE_DEBOUNCE_MS);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [luminance, params.levels, params.smoothing]);
+  }, [luminance, params.levels, params.smoothing, params.invert]);
 
   const model = useMemo(() => {
     if (!trace) return null;
@@ -47,10 +53,9 @@ function App() {
       maxHeight: params.maxHeight,
       baseThickness: params.baseThickness,
       width: params.width,
-      invert: params.invert,
       mirror: params.mirror,
     });
-  }, [trace, params.maxHeight, params.baseThickness, params.width, params.invert, params.mirror]);
+  }, [trace, params.maxHeight, params.baseThickness, params.width, params.mirror]);
 
   return (
     <div className="App">

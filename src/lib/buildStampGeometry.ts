@@ -46,8 +46,9 @@ export function buildStampGeometry(trace: TraceResult, params: GeometryParams): 
   trace.bands.forEach((band, index) => {
     if (band.contours.length === 0) return;
 
-    // index 0 = darkest/smallest mask. Dark-raised (default) makes it the tallest.
-    const heightFraction = params.invert ? (index + 1) / levels : (levels - index) / levels;
+    // index 0 is always the smallest/most-exclusive band (traceBands guarantees this,
+    // flipping which physical pixels that means when invert is set), so it's the tallest.
+    const heightFraction = (levels - index) / levels;
     const bandHeight = params.maxHeight * heightFraction;
     if (bandHeight <= 0) return;
 

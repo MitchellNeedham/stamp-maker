@@ -16,7 +16,10 @@ export interface TracedBand {
 }
 
 export interface TraceResult {
-  /** Ordered darkest/most-exclusive (index 0) to lightest/most-inclusive (last). */
+  /**
+   * Ordered smallest/most-exclusive (index 0) to largest/most-inclusive (last).
+   * Index 0 is the darkest pixels unless `invert` was set, in which case it's the lightest.
+   */
   bands: TracedBand[];
   imageWidth: number;
   imageHeight: number;
@@ -57,7 +60,13 @@ function layerToContours(layer: TracePath[]): Contour[] {
   return contours;
 }
 
-/** Traces `levels` cumulative brightness-threshold masks into smooth vector contours. */
+/**
+ * Traces `levels` cumulative brightness-threshold masks into smooth vector contours.
+ * Bands nest inside each other (index 0 smallest, last index largest), so downstream
+ * geometry building can always treat index 0 as the tallest. `invert` decides which
+ * physical pixels land in that small/exclusive band: the darkest (default) or the
+ * lightest, by mirroring the threshold and flipping the comparison direction.
+ */
 export function traceBands(lum: Luminance, params: TraceParams): TraceResult {
   const smoothed = blurLuminance(lum, params.smoothing * 0.3);
 
@@ -68,8 +77,9 @@ export function traceBands(lum: Luminance, params: TraceParams): TraceResult {
 
   const bands: TracedBand[] = [];
   for (let j = 0; j < params.levels; j++) {
-    const threshold = (255 * (j + 1)) / (params.levels + 1);
-    const mask = thresholdMask(smoothed, threshold);
+    const darkThreshold = (255 * (j + 1)) / (params.levels + 1);
+    const threshold = params.invert ? 255 - darkThreshold : darkThreshold;
+    const mask = thresholdMask(smoothed, threshold, params.invert);
 
     const tracedata = ImageTracer.imagedataToTracedata(mask, {
       pal: [BLACK, WHITE],

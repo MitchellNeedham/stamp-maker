@@ -25,15 +25,17 @@ export const DEFAULT_STAMP_PARAMS: StampParams = {
   mirror: false,
 };
 
-/** Params that require re-tracing the image (expensive: re-run posterize + vectorize). */
-export type TraceParams = Pick<StampParams, 'levels' | 'smoothing'>;
+/**
+ * Params that require re-tracing the image (expensive: re-run posterize + vectorize).
+ * `invert` lives here, not in GeometryParams: bands are cumulative and nested, so which
+ * brightness extreme is the small/exclusive (tallest) band has to be decided when the
+ * masks are built, not relabelled afterwards.
+ */
+export type TraceParams = Pick<StampParams, 'levels' | 'smoothing' | 'invert'>;
 
 /** Params that only affect how already-traced contours are extruded (cheap: rebuild geometry). */
-export type GeometryParams = Pick<
-  StampParams,
-  'maxHeight' | 'baseThickness' | 'width' | 'invert' | 'mirror'
->;
+export type GeometryParams = Pick<StampParams, 'maxHeight' | 'baseThickness' | 'width' | 'mirror'>;
 
 export function traceParamsEqual(a: TraceParams, b: TraceParams): boolean {
-  return a.levels === b.levels && a.smoothing === b.smoothing;
+  return a.levels === b.levels && a.smoothing === b.smoothing && a.invert === b.invert;
 }

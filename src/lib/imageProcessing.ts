@@ -73,13 +73,17 @@ export function blurLuminance(lum: Luminance, radius: number): Luminance {
   return { data: out, width, height };
 }
 
-/** A binary (black/white) ImageData: black where luminance <= threshold, white elsewhere. */
-export function thresholdMask(lum: Luminance, threshold: number): ImageData {
+/**
+ * A binary (black/white) ImageData: black where the pixel is "in" the band, white elsewhere.
+ * `above` flips which side of the threshold counts as in (used to build light-cumulative
+ * masks for the inverted relief, instead of the default dark-cumulative ones).
+ */
+export function thresholdMask(lum: Luminance, threshold: number, above: boolean): ImageData {
   const { data, width, height } = lum;
   const imgData = new ImageData(width, height);
   for (let i = 0; i < data.length; i++) {
-    const dark = data[i] <= threshold;
-    const v = dark ? 0 : 255;
+    const included = above ? data[i] >= threshold : data[i] <= threshold;
+    const v = included ? 0 : 255;
     imgData.data[i * 4] = v;
     imgData.data[i * 4 + 1] = v;
     imgData.data[i * 4 + 2] = v;
