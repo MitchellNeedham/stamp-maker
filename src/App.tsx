@@ -39,13 +39,14 @@ function App() {
           levels: params.levels,
           smoothing: params.smoothing,
           invert: params.invert,
+          contrast: params.contrast,
         })
       );
       setIsTracing(false);
     }, TRACE_DEBOUNCE_MS);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [luminance, params.levels, params.smoothing, params.invert]);
+  }, [luminance, params.levels, params.smoothing, params.invert, params.contrast]);
 
   const model = useMemo(() => {
     if (!trace) return null;

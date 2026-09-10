@@ -74,6 +74,26 @@ export function blurLuminance(lum: Luminance, radius: number): Luminance {
 }
 
 /**
+ * Pushes dark pixels darker and light pixels brighter (contrast > 0), or flattens
+ * everything toward mid-grey (contrast < 0), before the image gets sliced into levels.
+ * contrast is -10..10; each pixel's distance from mid-grey is raised to a power, so
+ * higher contrast snaps borderline pixels decisively into the darker/lighter band
+ * while lower contrast spreads the tonal range more evenly across the levels.
+ */
+export function applyContrast(lum: Luminance, contrast: number): Luminance {
+  if (contrast === 0) return lum;
+  const gamma = Math.pow(2, -contrast / 10);
+  const { data, width, height } = lum;
+  const out = new Float32Array(data.length);
+  for (let i = 0; i < data.length; i++) {
+    const t = (data[i] - 128) / 128;
+    const shaped = Math.sign(t) * Math.pow(Math.abs(t), gamma);
+    out[i] = Math.min(255, Math.max(0, 128 + shaped * 128));
+  }
+  return { data: out, width, height };
+}
+
+/**
  * A binary (black/white) ImageData: black where the pixel is "in" the band, white elsewhere.
  * `above` flips which side of the threshold counts as in (used to build light-cumulative
  * masks for the inverted relief, instead of the default dark-cumulative ones).

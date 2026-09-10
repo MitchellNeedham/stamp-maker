@@ -8,7 +8,7 @@ interface ControlPanelProps {
 interface SliderConfig {
   key: keyof Pick<
     StampParams,
-    'levels' | 'maxHeight' | 'baseThickness' | 'width' | 'smoothing'
+    'levels' | 'maxHeight' | 'baseThickness' | 'width' | 'smoothing' | 'contrast'
   >;
   label: string;
   min: number;
@@ -23,6 +23,7 @@ const SLIDERS: SliderConfig[] = [
   { key: 'baseThickness', label: 'Base thickness', min: 0.5, max: 10, step: 0.5, unit: 'mm' },
   { key: 'width', label: 'Model width', min: 10, max: 150, step: 1, unit: 'mm' },
   { key: 'smoothing', label: 'Smoothing', min: 0, max: 10, step: 1 },
+  { key: 'contrast', label: 'Contrast', min: -10, max: 10, step: 1 },
 ];
 
 export default function ControlPanel({ params, onChange }: ControlPanelProps) {

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import ImageTracer from 'imagetracerjs';
 import type { TracePath, TraceSegment } from 'imagetracerjs';
-import { blurLuminance, thresholdMask, type Luminance } from './imageProcessing';
+import { applyContrast, blurLuminance, thresholdMask, type Luminance } from './imageProcessing';
 import type { TraceParams } from '../types';
 
 const QUADRATIC_SAMPLES = 6;
@@ -68,7 +68,8 @@ function layerToContours(layer: TracePath[]): Contour[] {
  * lightest, by mirroring the threshold and flipping the comparison direction.
  */
 export function traceBands(lum: Luminance, params: TraceParams): TraceResult {
-  const smoothed = blurLuminance(lum, params.smoothing * 0.3);
+  const contrasted = applyContrast(lum, params.contrast);
+  const smoothed = blurLuminance(contrasted, params.smoothing * 0.3);
 
   // smoothing 0..10 -> curve-fitting tolerance and minimum kept path size.
   const ltres = 0.2 + params.smoothing * 0.5;

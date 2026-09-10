@@ -13,6 +13,8 @@ export interface StampParams {
   invert: boolean;
   /** Flip the design horizontally, needed so a pressed stamp impression reads correctly. */
   mirror: boolean;
+  /** Push blacks darker and whites brighter (+10) or flatten toward grey (-10) before slicing into levels. */
+  contrast: number;
 }
 
 export const DEFAULT_STAMP_PARAMS: StampParams = {
@@ -23,6 +25,7 @@ export const DEFAULT_STAMP_PARAMS: StampParams = {
   smoothing: 4,
   invert: false,
   mirror: false,
+  contrast: 0,
 };
 
 /**
@@ -31,11 +34,16 @@ export const DEFAULT_STAMP_PARAMS: StampParams = {
  * brightness extreme is the small/exclusive (tallest) band has to be decided when the
  * masks are built, not relabelled afterwards.
  */
-export type TraceParams = Pick<StampParams, 'levels' | 'smoothing' | 'invert'>;
+export type TraceParams = Pick<StampParams, 'levels' | 'smoothing' | 'invert' | 'contrast'>;
 
 /** Params that only affect how already-traced contours are extruded (cheap: rebuild geometry). */
 export type GeometryParams = Pick<StampParams, 'maxHeight' | 'baseThickness' | 'width' | 'mirror'>;
 
 export function traceParamsEqual(a: TraceParams, b: TraceParams): boolean {
-  return a.levels === b.levels && a.smoothing === b.smoothing && a.invert === b.invert;
+  return (
+    a.levels === b.levels &&
+    a.smoothing === b.smoothing &&
+    a.invert === b.invert &&
+    a.contrast === b.contrast
+  );
 }
