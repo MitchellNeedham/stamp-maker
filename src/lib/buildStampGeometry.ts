@@ -16,9 +16,20 @@ function contourToShape(
   const mapPoint = (p: THREE.Vector2) =>
     new THREE.Vector2(mirror ? imageWidth - p.x : p.x, -p.y);
 
-  const shape = new THREE.Shape(contour.outer.map(mapPoint));
+  const outerPoints = contour.outer.map(mapPoint);
+  const shape = new THREE.Shape(outerPoints);
+  const outerIsClockwise = THREE.ShapeUtils.isClockWise(outerPoints);
+
   for (const hole of contour.holes) {
-    shape.holes.push(new THREE.Path(hole.map(mapPoint)));
+    const holePoints = hole.map(mapPoint);
+    // ExtrudeGeometry only re-checks hole winding when it also had to flip the outer
+    // contour (a gap in three.js itself). A hole wound the same way as its outer
+    // contour gets side walls facing inward and gets backface-culled, i.e. invisible
+    // from outside at a grazing angle, so enforce the opposite winding ourselves.
+    if (THREE.ShapeUtils.isClockWise(holePoints) === outerIsClockwise) {
+      holePoints.reverse();
+    }
+    shape.holes.push(new THREE.Path(holePoints));
   }
   return shape;
 }
