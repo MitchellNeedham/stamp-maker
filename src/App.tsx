@@ -55,8 +55,16 @@ function App() {
       baseThickness: params.baseThickness,
       width: params.width,
       mirror: params.mirror,
+      edgeRounding: params.edgeRounding,
     });
-  }, [trace, params.maxHeight, params.baseThickness, params.width, params.mirror]);
+  }, [
+    trace,
+    params.maxHeight,
+    params.baseThickness,
+    params.width,
+    params.mirror,
+    params.edgeRounding,
+  ]);
 
   return (
     <div className="App">

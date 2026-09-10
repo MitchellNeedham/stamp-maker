@@ -15,6 +15,8 @@ export interface StampParams {
   mirror: boolean;
   /** Push blacks darker and whites brighter (+10) or flatten toward grey (-10) before slicing into levels. */
   contrast: number;
+  /** Bevels the outer edge of each step, in mm (0 = sharp terraces). */
+  edgeRounding: number;
 }
 
 export const DEFAULT_STAMP_PARAMS: StampParams = {
@@ -26,6 +28,7 @@ export const DEFAULT_STAMP_PARAMS: StampParams = {
   invert: false,
   mirror: false,
   contrast: 0,
+  edgeRounding: 0,
 };
 
 /**
@@ -37,7 +40,10 @@ export const DEFAULT_STAMP_PARAMS: StampParams = {
 export type TraceParams = Pick<StampParams, 'levels' | 'smoothing' | 'invert' | 'contrast'>;
 
 /** Params that only affect how already-traced contours are extruded (cheap: rebuild geometry). */
-export type GeometryParams = Pick<StampParams, 'maxHeight' | 'baseThickness' | 'width' | 'mirror'>;
+export type GeometryParams = Pick<
+  StampParams,
+  'maxHeight' | 'baseThickness' | 'width' | 'mirror' | 'edgeRounding'
+>;
 
 export function traceParamsEqual(a: TraceParams, b: TraceParams): boolean {
   return (

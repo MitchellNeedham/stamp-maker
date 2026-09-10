@@ -53,10 +53,19 @@ export function buildStampGeometry(trace: TraceResult, params: GeometryParams): 
     const bandHeight = params.maxHeight * heightFraction;
     if (bandHeight <= 0) return;
 
+    // Bevels the top cap down onto the band's own outer wall, rounding the edge of
+    // each terrace's shelf. Capped to a fraction of the band's own height so a large
+    // rounding value on a thin step can't turn the bevel into a self-intersecting mess.
+    const bevelThickness = Math.min(params.edgeRounding, bandHeight * 0.4);
+    const bevelEnabled = bevelThickness > 0;
+
     const shapes = band.contours.map((c) => contourToShape(c, trace.imageWidth, params.mirror));
     const geometry = new THREE.ExtrudeGeometry(shapes, {
       depth: bandHeight,
-      bevelEnabled: false,
+      bevelEnabled,
+      bevelThickness,
+      bevelSize: bevelThickness / scale,
+      bevelSegments: bevelEnabled ? 4 : 0,
       curveSegments: 12,
     });
     const mesh = new THREE.Mesh(geometry, material);
