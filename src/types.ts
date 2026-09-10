@@ -1,0 +1,39 @@
+export interface StampParams {
+  /** Number of relief height steps traced from the image (posterization bands). */
+  levels: number;
+  /** Height of the tallest relief point, in millimetres. */
+  maxHeight: number;
+  /** Thickness of the flat base under the relief, in millimetres. */
+  baseThickness: number;
+  /** Overall model width, in millimetres (height derives from image aspect ratio). */
+  width: number;
+  /** Curve smoothing / despeckle amount (0 = follow pixels closely, 10 = very smooth). */
+  smoothing: number;
+  /** Swap which brightness extreme is raised (dark-raised is the default, stamp-die convention). */
+  invert: boolean;
+  /** Flip the design horizontally, needed so a pressed stamp impression reads correctly. */
+  mirror: boolean;
+}
+
+export const DEFAULT_STAMP_PARAMS: StampParams = {
+  levels: 5,
+  maxHeight: 3,
+  baseThickness: 2,
+  width: 40,
+  smoothing: 4,
+  invert: false,
+  mirror: false,
+};
+
+/** Params that require re-tracing the image (expensive: re-run posterize + vectorize). */
+export type TraceParams = Pick<StampParams, 'levels' | 'smoothing'>;
+
+/** Params that only affect how already-traced contours are extruded (cheap: rebuild geometry). */
+export type GeometryParams = Pick<
+  StampParams,
+  'maxHeight' | 'baseThickness' | 'width' | 'invert' | 'mirror'
+>;
+
+export function traceParamsEqual(a: TraceParams, b: TraceParams): boolean {
+  return a.levels === b.levels && a.smoothing === b.smoothing;
+}

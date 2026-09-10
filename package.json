@@ -2,6 +2,7 @@
   "name": "stamp-maker",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://mitchellneedham.github.io/stamp-maker",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -10,10 +11,11 @@
     "@types/node": "^16.18.69",
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
+    "imagetracerjs": "^1.2.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
+    "three": "^0.186.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -39,5 +41,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/three": "^0.185.4",
+    "typescript": "^5.9.3"
   }
 }
