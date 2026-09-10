@@ -41,6 +41,7 @@ export function buildStampGeometry(trace: TraceResult, params: GeometryParams): 
     material
   );
   base.position.set(params.width / 2, params.baseThickness / 2, modelDepth / 2);
+  base.receiveShadow = true;
   group.add(base);
 
   trace.bands.forEach((band, index) => {
@@ -63,6 +64,8 @@ export function buildStampGeometry(trace: TraceResult, params: GeometryParams): 
     mesh.rotation.x = -Math.PI / 2;
     mesh.scale.set(scale, scale, 1);
     mesh.position.set(0, params.baseThickness, 0);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
     group.add(mesh);
   });
 

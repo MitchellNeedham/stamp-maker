@@ -29,6 +29,8 @@ export default function StampViewer({ model }: StampViewerProps) {
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -36,8 +38,20 @@ export default function StampViewer({ model }: StampViewerProps) {
     controls.enableDamping = true;
 
     scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.2));
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    keyLight.position.set(1, 2, 1);
+    // Angled low so a shallow relief still throws a visible self-shadow, not a
+    // near-overhead light that would wash the height differences out.
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
+    keyLight.position.set(40, 35, 25);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(2048, 2048);
+    keyLight.shadow.bias = -0.0005;
+    const shadowCam = keyLight.shadow.camera;
+    shadowCam.left = -100;
+    shadowCam.right = 100;
+    shadowCam.top = 100;
+    shadowCam.bottom = -100;
+    shadowCam.near = 1;
+    shadowCam.far = 200;
     scene.add(keyLight);
 
     scene.add(new THREE.GridHelper(100, 20, 0xcccccc, 0xe2e2e2));
